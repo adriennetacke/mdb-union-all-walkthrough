@@ -1,0 +1,202 @@
+// UNION ALL MongoDB Playground
+// Created by: Adrienne Tacke <>
+// Related Blog Post: UNION ALL Walkthrough
+
+
+// Select the database to use.
+// This should match the cluster you'd like to use
+use('union-walkthrough');
+
+// The drop() command destroys all data from a collection.
+// Make sure you run it against the proper database and collection
+// you are intending to delete data from!
+db.starships.drop();
+db.vehicles.drop();
+
+// EXAMPLE - $unionWith using collections with different schemas
+
+// 1 - Insert a few documents into the starships collection
+db.starships.insertMany([
+    {
+        "name": "Death Star",
+        "model": "DS-1 Orbital Battle Station",
+        "manufacturer": "Imperial Department of Military Research, Sienar Fleet Systems",
+        "cost_in_credits": "1000000000000",
+        "length": "120000",
+        "max_atmosphering_speed": "n/a",
+        "crew": 342953,
+        "passengers": 843342,
+        "cargo_capacity": "1000000000000",
+        "consumables": "3 years",
+        "hyperdrive_rating": 4.0,
+        "MGLT": 10,
+        "starship_class": "Deep Space Mobile Battlestation",
+        "pilots": []
+    },
+    {
+        "name": "Millennium Falcon",
+        "model": "YT-1300 light freighter",
+        "manufacturer": "Corellian Engineering Corporation",
+        "cost_in_credits": "100000",
+        "length": "34.37",
+        "max_atmosphering_speed": "1050",
+        "crew": 4,
+        "passengers": 6,
+        "cargo_capacity": 100000,
+        "consumables": "2 months",
+        "hyperdrive_rating": 0.5,
+        "MGLT": 75,
+        "starship_class": "Light freighter",
+        "pilots": [
+            "http://swapi.dev/api/people/13/",
+            "http://swapi.dev/api/people/14/",
+            "http://swapi.dev/api/people/25/",
+            "http://swapi.dev/api/people/31/"
+        ]
+    },
+    {
+        "name": "Y-wing",
+        "model": "BTL Y-wing",
+        "manufacturer": "Koensayr Manufacturing",
+        "cost_in_credits": "134999",
+        "length": "14",
+        "max_atmosphering_speed": "1000km",
+        "crew": 2,
+        "passengers": 0,
+        "cargo_capacity": 110,
+        "consumables": "1 week",
+        "hyperdrive_rating": 1.0,
+        "MGLT": 80,
+        "starship_class": "assault starfighter",
+        "pilots": []
+    },
+    {
+        "name": "X-wing",
+        "model": "T-65 X-wing",
+        "manufacturer": "Incom Corporation",
+        "cost_in_credits": "149999",
+        "length": "12.5",
+        "max_atmosphering_speed": "1050",
+        "crew": 1,
+        "passengers": 0,
+        "cargo_capacity": 110,
+        "consumables": "1 week",
+        "hyperdrive_rating": 1.0,
+        "MGLT": 100,
+        "starship_class": "Starfighter",
+        "pilots": [
+            "http://swapi.dev/api/people/1/",
+            "http://swapi.dev/api/people/9/",
+            "http://swapi.dev/api/people/18/",
+            "http://swapi.dev/api/people/19/"
+        ]
+    },
+]);
+
+// 2 - Insert a few documents into the vehicles collection
+db.vehicles.insertMany([
+    {
+        "name": "Sand Crawler",
+        "model": "Digger Crawler",
+        "manufacturer": "Corellia Mining Corporation",
+        "cost_in_credits": "150000",
+        "length": "36.8 ",
+        "max_atmosphering_speed": 30,
+        "crew": 46,
+        "passengers": 30,
+        "cargo_capacity": 50000,
+        "consumables": "2 months",
+        "vehicle_class": "wheeled",
+        "pilots": []
+    },
+    {
+        "name": "X-34 landspeeder",
+        "model": "X-34 landspeeder",
+        "manufacturer": "SoroSuub Corporation",
+        "cost_in_credits": "10550",
+        "length": "3.4 ",
+        "max_atmosphering_speed": 250,
+        "crew": 1,
+        "passengers": 1,
+        "cargo_capacity": 5,
+        "consumables": "unknown",
+        "vehicle_class": "repulsorcraft",
+        "pilots": [],
+    },
+    {
+        "name": "AT-AT",
+        "model": "All Terrain Armored Transport",
+        "manufacturer": "Kuat Drive Yards, Imperial Department of Military Research",
+        "cost_in_credits": "unknown",
+        "length": "20",
+        "max_atmosphering_speed": 60,
+        "crew": 5,
+        "passengers": 40,
+        "cargo_capacity": 1000,
+        "consumables": "unknown",
+        "vehicle_class": "assault walker",
+        "pilots": [],
+        "films": [
+            "http://swapi.dev/api/films/2/",
+            "http://swapi.dev/api/films/3/"
+        ],
+        "created": "2014-12-15T12:38:25.937000Z",
+        "edited": "2014-12-20T21:30:21.677000Z",
+        "url": "http://swapi.dev/api/vehicles/18/"
+    },
+    {
+        "name": "AT-ST",
+        "model": "All Terrain Scout Transport",
+        "manufacturer": "Kuat Drive Yards, Imperial Department of Military Research",
+        "cost_in_credits": "unknown",
+        "length": "2",
+        "max_atmosphering_speed": 90,
+        "crew": 2,
+        "passengers": 0,
+        "cargo_capacity": 200,
+        "consumables": "none",
+        "vehicle_class": "walker",
+        "pilots": [
+            "http://swapi.dev/api/people/13/"
+        ]
+    },
+    {
+        "name": "Storm IV Twin-Pod cloud car",
+        "model": "Storm IV Twin-Pod",
+        "manufacturer": "Bespin Motors",
+        "cost_in_credits": "75000",
+        "length": "7",
+        "max_atmosphering_speed": 1500,
+        "crew": 2,
+        "passengers": 0,
+        "cargo_capacity": 10,
+        "consumables": "1 day",
+        "vehicle_class": "repulsorcraft",
+        "pilots": [],
+    }
+]);
+
+// 3 - Run an aggregation with no pipeline
+db.starships.aggregate([
+  { $unionWith: 'vehicles'}
+]);
+
+// EXAMPLE - $unionWith using collections with different schemas and a pipeline
+db.starships.aggregate([
+    { 
+        $unionWith: {
+            coll: 'vehicles',
+            pipeline: [
+                { 
+                    $redact: {
+                        $cond: {
+                            if: { $eq: [ "$manufacturer", "Kuat Drive Yards, Imperial Department of Military Research"] },
+                            then: "$$PRUNE",
+                            else: "$$DESCEND"
+                        }
+                    }
+                }
+            ]
+        }
+    }
+]);
