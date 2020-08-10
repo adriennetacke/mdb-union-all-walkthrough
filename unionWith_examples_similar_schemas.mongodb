@@ -9,13 +9,17 @@ use('union-walkthrough');
 
 // The drop() command destroys all data from a collection.
 // Make sure you run it against the proper database and collection
-// you are intending to delete data from!
-db.lonely_planets.drop();
-db.popular_planets.drop();
+// you are intending to delete data from! You can leave them commented
+// out for now. Only uncomment them if you need to clear the data from
+// your collections.
+
+// db.lonely_planets.drop();
+// db.popular_planets.drop();
 
 // EXAMPLE - $unionWith using a pipeline 
 
 // 1 - Insert a few documents into the lonely_planets collection.
+// (Be sure to also select line 8, which specifies which database to use!)
 db.lonely_planets.insertMany([
     {
         "name": "Endor",
@@ -118,6 +122,7 @@ db.lonely_planets.insertMany([
 ]);
 
 // 2 - Insert a few documents into the popular_planets collection.
+// (Be sure to also select line 8, which specifies which database to use!)
 db.popular_planets.insertMany([
     {
         "name": "Tatooine",
@@ -255,8 +260,9 @@ db.popular_planets.insertMany([
     }
 ]);
 
-
 // 3 - Run an aggregation to view total planet populations, grouped by climate type.
+use('union-walkthrough');
+
 db.lonely_planets.aggregate([
     {
         $match: {
@@ -277,14 +283,15 @@ db.lonely_planets.aggregate([
     },
     {
         $group: {
-            _id: '$climate', totalPopulation: { $sum: { $toLong: '$population' } }
+            _id: '$climate', 
+            totalPopulation: { $sum: { $toLong: '$population' } }
         }
     }
 ]);
 
 // EXAMPLE - $unionWith without a pipeline
+use('union-walkthrough');
 
-// Run an aggreggation with no pipeline
 db.lonely_planets.aggregate([
     { $unionWith: 'popular_planets' }
 ]);

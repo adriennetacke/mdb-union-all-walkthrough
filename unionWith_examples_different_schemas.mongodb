@@ -9,13 +9,17 @@ use('union-walkthrough');
 
 // The drop() command destroys all data from a collection.
 // Make sure you run it against the proper database and collection
-// you are intending to delete data from!
-db.starships.drop();
-db.vehicles.drop();
+// you are intending to delete data from! You can leave them commented
+// out for now. Only uncomment them if you need to clear the data from
+// your collections.
+
+// db.starships.drop();
+// db.vehicles.drop();
 
 // EXAMPLE - $unionWith using collections with different schemas
 
 // 1 - Insert a few documents into the starships collection
+// (Be sure to also select line 8, which specifies which database to use!)
 db.starships.insertMany([
     {
         "name": "Death Star",
@@ -94,6 +98,7 @@ db.starships.insertMany([
 ]);
 
 // 2 - Insert a few documents into the vehicles collection
+// (Be sure to also select line 8, which specifies which database to use!)
 db.vehicles.insertMany([
     {
         "name": "Sand Crawler",
@@ -177,11 +182,15 @@ db.vehicles.insertMany([
 ]);
 
 // 3 - Run an aggregation with no pipeline
+use('union-walkthrough');
+
 db.starships.aggregate([
   { $unionWith: 'vehicles'}
 ]);
 
 // EXAMPLE - $unionWith using collections with different schemas and a pipeline
+use('union-walkthrough');
+
 db.starships.aggregate([
     { 
         $unionWith: {
